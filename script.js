@@ -1,25 +1,18 @@
-function delay(ms) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
+it('Should display text after a delay', () => {
+  const delay = 1000;
+  const text = "Test - 1";
 
-async function displayTextAfterDelay() {
-  const text = document.getElementById('text').value;
-  const delayTime = parseInt(document.getElementById('delay').value, 10);
-  const output = document.getElementById('output');
+  cy.visit(baseUrl + "/main.html"); 
+  cy.get("input#text").type(text);
+  cy.get("input#delay").type(delay);
+  cy.get("button#btn").click();
 
-  if (!text) {
-    output.textContent = 'Please enter some text.';
-    return;
-  }
+  // Validate the output shows 'Waiting...' after clicking the button
+  cy.get("div#output").should("have.text", "Waiting...");
 
-  if (isNaN(delayTime) || delayTime < 0) {
-    output.textContent = 'Please enter a valid delay in milliseconds.';
-    return;
-  }
+  // Wait for the specified delay + buffer
+  cy.wait(delay + 500);
 
-  output.textContent = 'Waiting...';
-  await delay(delayTime);
-  output.textContent = text;
-}
-
-document.getElementById('btn').addEventListener('click', displayTextAfterDelay);
+  // Validate that the output now displays the entered text
+  cy.get("div#output").should("have.text", text);
+});
