@@ -1,18 +1,29 @@
-it('Should display text after a delay', () => {
-  const delay = 1000;
-  const text = "Test - 1";
+// Get references to the DOM elements
+const textInput = document.getElementById('text');
+const delayInput = document.getElementById('delay');
+const submitButton = document.getElementById('btn');
+const outputDiv = document.getElementById('output');
 
-  cy.visit(baseUrl + "/main.html"); 
-  cy.get("input#text").type(text);
-  cy.get("input#delay").type(delay);
-  cy.get("button#btn").click();
+// Async function to introduce a delay
+async function displayMessageAfterDelay(text, delay) {
+  // Wait for the specified delay
+  await new Promise((resolve) => setTimeout(resolve, delay));
+  // Display the text in the output div
+  outputDiv.textContent = text;
+}
 
-  // Validate the output shows 'Waiting...' after clicking the button
-  cy.get("div#output").should("have.text", "Waiting...");
+// Event listener for the submit button
+submitButton.addEventListener('click', async () => {
+  // Get the user-provided text and delay values
+  const text = textInput.value;
+  const delay = parseInt(delayInput.value);
 
-  // Wait for the specified delay + buffer
-  cy.wait(delay + 500);
+  // Validate the inputs
+  if (!text || isNaN(delay) || delay < 0) {
+    outputDiv.textContent = 'Please enter valid text and delay.';
+    return;
+  }
 
-  // Validate that the output now displays the entered text
-  cy.get("div#output").should("have.text", text);
+  // Call the async function to display the message after the delay
+  await displayMessageAfterDelay(text, delay);
 });
